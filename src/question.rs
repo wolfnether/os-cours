@@ -17,7 +17,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                     "L’epiphyse supérieure du fémur contient deux trochanters : le grand trochanter et le petit trochanter.",
                     true,
                 ),
-                Candidate::new("L’epiphyse supérieure du fémur est en forme cubique", false),
+                Candidate::new("L’epiphyse supérieure du fémur est en forme cubique.", false),
             ],
         ),
         Qcm::new_qcm(

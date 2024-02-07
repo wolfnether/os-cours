@@ -19,7 +19,7 @@ fn App() -> Html {
     let score = use_state(|| 0);
 
     if *index >= questions.len() {
-        html!(<div>{"Vous avez repondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
+        html!(<div>{"Vous avez répondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
     } else if *state {
         let question = dyn_clone::clone_box(&*questions[*index]);
         html!(
