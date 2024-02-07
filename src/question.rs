@@ -5,7 +5,7 @@ use yew::{html, Html};
 use crate::Responses;
 
 pub fn get_question() -> Vec<Box<dyn Question>> {
-    vec![
+    let mut questions: Vec<Box<dyn Question>> = vec![
         Qcm::new_qcm(
             "Parmi les propositions suivantes, lesquelles sont exactes ?",
             vec![
@@ -195,7 +195,9 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Dans la fosse poplitée", false),
             ],
         ),
-    ]
+    ];
+    questions.shuffle(&mut rand::thread_rng());
+    questions
 }
 
 pub trait Question: DynClone {
