@@ -1,1 +1,1 @@
-trunk build --release --filehash false -d docs
+trunk build --release --filehash false -d docs --public-url "./"
