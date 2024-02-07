@@ -22,32 +22,39 @@ fn App() -> Html {
         html!(<div>{"Vous avez répondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
     } else if *state {
         let question = dyn_clone::clone_box(&*questions[*index]);
+        let success = question.success(responses);
         html!(
             <div>
-                {question.title()} <br/>
+                <h3>{question.title()}</h3>
 
-                if question.success(responses) {
-                    { "Vous avez bien répondu. Bravo !" }
+                if success{
+                    { "Tu a bien répondu. Bravo !" }
                 } else {
-                    { "Votre réponse est incorrecte ou incomplète." } <br/> {"La réponse attendue :"} <br/>
+                    { "Ta réponse est incorrecte ou incomplète." } <br/><br/> {"La réponse attendue :"} <br/>
                     {question.responses()}
+                    <br/>
+                    {"Nous reviendrons plus tard sur cette question."}
                 }
+                <br/><br/>
                 <button onclick={
                     move|_| {
                         state.set(false);
-                        index.set(*index+1);
-                        let mut _questions = questions.iter().map(|q| dyn_clone::clone_box(&(**q))).collect::<Vec<_>>();
-                        _questions.push(dyn_clone::clone_box(&*question));
-                        questions.set(_questions);
-                        }}
-                    >{"Passer a la question suivante"}</button>
+                        if success {
+                            index.set(*index+1);
+                        } else {
+                            let mut _questions = questions.iter().map(|q| dyn_clone::clone_box(&(**q))).collect::<Vec<_>>();
+                            _questions.push(dyn_clone::clone_box(&*question));
+                            questions.set(_questions);
+                        }
+                    }
+                }>{"Passons a la question suivante"}</button>
             </div>
         )
     } else {
         let question = dyn_clone::clone_box(&*questions[*index]);
         html!(
             <div>
-                {question.title()} <br/>
+                <h3>{question.title()}</h3>
                 {question.construct(responses.clone())} <br/>
 
                 <button onclick={

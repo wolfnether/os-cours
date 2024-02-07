@@ -686,11 +686,11 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper255 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper254 = function(arg0, arg1, arg2) {
         const ret = makeClosure(arg0, arg1, 108, __wbg_adapter_24);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper581 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper580 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 210, __wbg_adapter_27);
         return addHeapObject(ret);
     };
@@ -733,7 +733,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('os-cours-e1340ceda29a529d_bg.wasm', import.meta.url);
+        input = new URL('os-cours-2917890bb2b09385_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 
