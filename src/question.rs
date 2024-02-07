@@ -17,7 +17,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                     "L’epiphyse supérieure du fémur contient deux trochanters : le grand trochanter et le petit trochanter.",
                     true,
                 ),
-                Candidate::new("L’epiphyse supérieure du fémur est en forme cubiqu", false),
+                Candidate::new("L’epiphyse supérieure du fémur est en forme cubique", false),
             ],
         ),
         Qcm::new_qcm(
@@ -124,7 +124,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
             ],
         ),
         Qcm::new_qcm(
-            "Qu’est-ce qui s’insère sur la partie postérieure de l’épicondyle du condyle fémoral latéral :",
+            "Qu’est-ce qui s’insère sur la partie postérieure de l’épicondyle du condyle fémoral latéral ?",
             vec![
                 Candidate::new("Le chef latéral du gastrocnémien", true),
                 Candidate::new("Le tendon du muscle poplité", false),

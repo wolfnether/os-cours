@@ -21,7 +21,7 @@ fn App() -> Html {
     if *index >= questions.len() {
         html!(<div>{"Vous avez repondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
     } else if *state {
-        let question = &questions[*index];
+        let question = dyn_clone::clone_box(&*questions[*index]);
         html!(
             <div>
                 {question.title()} <br/>
@@ -29,14 +29,18 @@ fn App() -> Html {
                 if question.success(responses) {
                     { "Vous avez bien repondu." }
                 } else {
-                    { "Vous avez mal repondu." } <br/> {"Les bonnes reponses reponses etait :"} <br/>
+                    { "Vous avez mal repondu." } <br/> {"Les bonnes reponses est :"} <br/>
                     {question.responses()}
                 }
                 <button onclick={
-                    let state = state.clone();
-                    let index = index.clone();
-                    move|_| {state.set(false); index.set(*index+1)}}
-                    >{"suivante"}</button>
+                    move|_| {
+                        state.set(false);
+                        index.set(*index+1);
+                        let mut _questions = questions.iter().map(|q| dyn_clone::clone_box(&(**q))).collect::<Vec<_>>();
+                        _questions.push(dyn_clone::clone_box(&*question));
+                        questions.set(_questions);
+                        }}
+                    >{"question suivante"}</button>
             </div>
         )
     } else {
@@ -47,8 +51,6 @@ fn App() -> Html {
                 {question.construct(responses.clone())} <br/>
 
                 <button onclick={
-                    let state = state.clone();
-                    let score = score.clone();
                     move|_|{
                         state.set(true);
                         if question.success(responses.clone()) {
