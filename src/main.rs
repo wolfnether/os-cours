@@ -56,7 +56,7 @@ fn App() -> Html {
                         if question.success(responses.clone()) {
                             score.set(*score+1)
                         }
-                    }}>{"Passer a la correction"}</button>
+                    }}>{"Verifions la réponse"}</button>
             </div>
         )
     }
