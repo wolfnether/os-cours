@@ -1,1 +1,1 @@
-trunk build --release --filehash false -d docs --public-url "os-cours/"
+trunk build --release -d docs --public-url "os-cours/"
