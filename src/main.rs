@@ -27,9 +27,9 @@ fn App() -> Html {
                 {question.title()} <br/>
 
                 if question.success(responses) {
-                    { "Vous avez bien repondu." }
+                    { "Vous avez bien répondu. Bravo !" }
                 } else {
-                    { "Vous avez mal repondu." } <br/> {"Les bonnes reponses est :"} <br/>
+                    { "Votre réponse est incorrecte ou incomplète." } <br/> {"La réponse attendue :"} <br/>
                     {question.responses()}
                 }
                 <button onclick={
@@ -40,7 +40,7 @@ fn App() -> Html {
                         _questions.push(dyn_clone::clone_box(&*question));
                         questions.set(_questions);
                         }}
-                    >{"question suivante"}</button>
+                    >{"Passer a la question suivante"}</button>
             </div>
         )
     } else {
@@ -56,7 +56,7 @@ fn App() -> Html {
                         if question.success(responses.clone()) {
                             score.set(*score+1)
                         }
-                    }}>{"repondre"}</button>
+                    }}>{"Passer a la correction"}</button>
             </div>
         )
     }
