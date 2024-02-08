@@ -22,7 +22,7 @@ fn App() -> Html {
         html!(<div>{"Vous avez répondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
     } else if *state {
         let question = dyn_clone::clone_box(&*questions[*index]);
-        let success = question.success(responses);
+        let success = question.success(responses.clone());
         html!(
             <div>
                 <h3>{question.title()}</h3>
@@ -39,8 +39,10 @@ fn App() -> Html {
                 <button onclick={
                     move|_| {
                         state.set(false);
+                        index.set(*index+1);
+                        responses.set(BTreeMap::<usize, bool>::new());
                         if success {
-                            index.set(*index+1);
+                            score.set(*score+1);
                         } else {
                             let mut _questions = questions.iter().map(|q| dyn_clone::clone_box(&(**q))).collect::<Vec<_>>();
                             _questions.push(dyn_clone::clone_box(&*question));
