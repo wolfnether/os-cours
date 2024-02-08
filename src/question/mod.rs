@@ -1,12 +1,53 @@
+use std::collections::BTreeMap;
+
 use dyn_clone::DynClone;
 use rand::seq::SliceRandom;
-use yew::{html, Html};
+use yew::{Html, UseStateHandle};
 
-use crate::Responses;
+use self::mcq::{Candidate, Mcq};
+use self::tf::Tf;
+
+mod mcq;
+mod tf;
+
+type Responses = UseStateHandle<ResponsesEnum>;
+
+#[derive(Debug)]
+pub enum ResponsesEnum {
+    Mcq(BTreeMap<usize, bool>),
+    Tf(Option<bool>),
+}
+
+impl Clone for ResponsesEnum {
+    fn clone(&self) -> Self {
+        match self {
+            Self::Mcq(v) => Self::Mcq(v.clone()),
+            Self::Tf(v) => Self::Tf(*v),
+        }
+    }
+}
+
+impl ResponsesEnum {
+    pub fn mcq(&self) -> BTreeMap<usize, bool> {
+        if let Self::Mcq(v) = self {
+            v.clone()
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn tf(&self) -> Option<bool> {
+        if let Self::Tf(v) = self {
+            *v
+        } else {
+            None
+        }
+    }
+}
 
 pub fn get_question() -> Vec<Box<dyn Question>> {
     let mut questions: Vec<Box<dyn Question>> = vec![
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Parmi les propositions suivantes, lesquelles sont exactes ?",
             vec![
                 Candidate::new(
@@ -20,7 +61,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("L’epiphyse supérieure du fémur est en forme cubique.", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Où s’insère le ligament de la tête fémoral ?",
             vec![
                 Candidate::new("Sur le grand trochanter.", false),
@@ -28,7 +69,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Sur la partie supérieure de la tête fémoral.", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Choisissez les bonnes réponses. La tête fémorale regarde en :",
             vec![
                 Candidate::new("Haut", true),
@@ -39,7 +80,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Bas", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Quel muscle s’insère sur la face supérieure du grand trochanter ?",
             vec![
                 Candidate::new("Le grand fessier", false),
@@ -48,21 +89,21 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Le piriforme", true),
             ],
         ),
-        Qcm::new_tf("La tête fémorale s’articule avec l’os coxal.", true),
-        Qcm::new_tf("L’articulation coxo-fémorale est de type bicondylaire.", false),
-        Qcm::new_tf(
+        Tf::new_boxed("La tête fémorale s’articule avec l’os coxal.", true),
+        Tf::new_boxed("L’articulation coxo-fémorale est de type bicondylaire.", false),
+        Tf::new_boxed(
             "Le muscles moyen fessier s’insère sur la face supérieure du grand trochanter.",
             false,
         ),
-        Qcm::new_tf(
+        Tf::new_boxed(
             "Sur le petit trochanter, nous retrouvons trois insertions : le psoas, l’iliaque et le ligament pubo-fémoral.",
             true,
         ),
-        Qcm::new_tf(
+        Tf::new_boxed(
             "La face antérieure du col fémoral est intra capsulaire et est dépourvu d’insertion.",
             true,
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Quels sont les muscles qui s’insèrent sur la ligne âpre ?",
             vec![
                 Candidate::new("Biceps brachial", false),
@@ -72,7 +113,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Vaste intermédiaire", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Quels sont les muscles adducteurs qui s’insèrent sur la ligne âpre ?",
             vec![
                 Candidate::new("Gracile", false),
@@ -82,7 +123,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Court adducteur", true),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Lequel des chefs du quadriceps est bi-articulaire ?",
             vec![
                 Candidate::new("Vaste latéra", false),
@@ -91,12 +132,12 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Vaste médial", false),
             ],
         ),
-        Qcm::new_tf("Le fémur est un os long et symétrique.", false),
-        Qcm::new_tf("La trifurcation se situe au niveau inférieur de la ligne âpre.", false),
-        Qcm::new_tf("Le fémur est l’os le plus long du corps humain.", true),
-        Qcm::new_tf("La diaphyse fémorale est triangulaire à la coupe.", true),
-        Qcm::new_tf("Le muscle pectiné s’insère sur la trifurcation.", true),
-        Qcm::new_qcm(
+        Tf::new_boxed("Le fémur est un os long et symétrique.", false),
+        Tf::new_boxed("La trifurcation se situe au niveau inférieur de la ligne âpre.", false),
+        Tf::new_boxed("Le fémur est l’os le plus long du corps humain.", true),
+        Tf::new_boxed("La diaphyse fémorale est triangulaire à la coupe.", true),
+        Tf::new_boxed("Le muscle pectiné s’insère sur la trifurcation.", true),
+        Mcq::new_boxed(
             "Quelles parties distingue-t-on sur l’extrémité inférieure du fémur :",
             vec![
                 Candidate::new("La patella", false),
@@ -105,7 +146,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("La zone de transition", true),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Où se situe la zone de transition ?",
             vec![
                 Candidate::new("Entre les deux condyles", false),
@@ -114,7 +155,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Au-dessus de la surface patellaire", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Comment est définie la surface patellaire ou trochlée ?",
             vec![
                 Candidate::new("Convexe avec une seule joue", false),
@@ -123,7 +164,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Plate sans caractéristique particulière", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Qu’est-ce qui s’insère sur la partie postérieure de l’épicondyle du condyle fémoral latéral ?",
             vec![
                 Candidate::new("Le chef latéral du gastrocnémien", true),
@@ -132,7 +173,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Le rétinaculum patellaire", true),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Comment est définie la face supérieure du condyle fémoral latérale ?",
             vec![
                 Candidate::new("Convexe transversalement avec un tubercule médian", false),
@@ -144,7 +185,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Plate avec une lèvre inférieure", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Quelle est la forme générale des surfaces articulaires des condyles fémoraux ?",
             vec![
                 Candidate::new("Sphérique", false),
@@ -156,7 +197,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Cylindrique", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Quel ligament s’insère sur la face latérale du condyle fémoral médial ?",
             vec![
                 Candidate::new("Ligament croisé antérieur", false),
@@ -165,7 +206,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Rétinaculum patellaire", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Quelle structure limite la fosse intercondylaire en avant ?",
             vec![
                 Candidate::new("La surface poplitée", false),
@@ -174,7 +215,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("La face axiale des condyles", false),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Qu’est-ce qui caractérise le condyle médial ?",
             vec![
                 Candidate::new("Il est plus large et plus long que le condyle latéral", false),
@@ -183,7 +224,7 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
                 Candidate::new("Il ne donne pas insertion au muscle plantaire", true),
             ],
         ),
-        Qcm::new_qcm(
+        Mcq::new_boxed(
             "Où se situe le tubercule de l’adducteur ?",
             vec![
                 Candidate::new("Au-dessus de la face supérieure du condyle médial", true),
@@ -202,92 +243,8 @@ pub fn get_question() -> Vec<Box<dyn Question>> {
 
 pub trait Question: DynClone {
     fn title(&self) -> &str;
-    fn construct(&self, responses_state: Responses) -> Html;
-    fn success(&self, responses_state: Responses) -> bool;
+    fn construct(&self, responses_state: &Responses) -> Html;
+    fn success(&self, responses_state: &Responses) -> bool;
     fn responses(&self) -> Html;
-}
-
-#[derive(Debug, Clone)]
-pub struct Candidate<'a> {
-    title: &'a str,
-    value: bool,
-}
-
-impl<'a> Candidate<'a> {
-    fn new(title: &'a str, value: bool) -> Self {
-        Self { title, value }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Qcm<'a> {
-    title: &'a str,
-    candidate: Vec<Candidate<'a>>,
-}
-
-impl<'a> Qcm<'a> {
-    fn new_qcm(title: &'a str, mut candidate: Vec<Candidate<'a>>) -> Box<Self> {
-        candidate.shuffle(&mut rand::thread_rng());
-        Box::new(Self { title, candidate })
-    }
-
-    fn new_tf(title: &'a str, value: bool) -> Box<Self> {
-        Box::new(Self {
-            title,
-            candidate: vec![Candidate::new("Vrai", value), Candidate::new("Faux", !value)],
-        })
-    }
-}
-
-impl Question for Qcm<'_> {
-    fn title(&self) -> &str {
-        self.title
-    }
-
-    fn construct(&self, responses_state: Responses) -> Html {
-        html!(
-            <div>
-            {self.candidate.iter().enumerate().map(|(i,c)|
-                html!(
-                    <div>
-                    <input type="checkbox" onclick={
-                        let responses_state = responses_state.clone();
-                        move |_| {
-                            let mut responses = (*responses_state).clone();
-                            if let Some(v) = responses_state.get(&i) {
-                                responses.insert(i, !v);
-                            } else {
-                                responses.insert(i, true);
-                            }
-                            responses_state.set(responses)
-                        }
-                    }/>
-                    {" "} {c.title}</div>)).collect::<Html>()
-                }
-            </div>
-        )
-    }
-
-    fn success(&self, responses_state: Responses) -> bool {
-        for (i, candidate) in self.candidate.iter().enumerate() {
-            if let Some(r) = responses_state.get(&i) {
-                if *r != candidate.value {
-                    return false;
-                }
-            } else if candidate.value {
-                return false;
-            }
-        }
-        true
-    }
-
-    fn responses(&self) -> Html {
-        html!({
-            self.candidate
-                .iter()
-                .filter(|candidate| candidate.value)
-                .map(|candidate| html!(<div>{candidate.title}</div>))
-                .collect::<Html>()
-        })
-    }
+    fn setup(&self, responses_state: &Responses);
 }

@@ -1,16 +1,12 @@
-use std::collections::BTreeMap;
-
 use yew::prelude::*;
 
 use crate::question::get_question;
 
 mod question;
 
-pub type Responses = UseStateHandle<BTreeMap<usize, bool>>;
-
 #[function_component]
 fn App() -> Html {
-    let responses = use_state(BTreeMap::<usize, bool>::new);
+    let responses = use_state(|| question::ResponsesEnum::Tf(None));
     let questions = use_state(get_question);
     let index = use_state(|| 0);
 
@@ -18,11 +14,13 @@ fn App() -> Html {
 
     let score = use_state(|| 0);
 
+    let setup = use_state(|| false);
+
     if *index >= questions.len() {
         html!(<div>{"Vous avez répondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
     } else if *state {
         let question = dyn_clone::clone_box(&*questions[*index]);
-        let success = question.success(responses.clone());
+        let success = question.success(&responses);
         html!(
             <div>
                 <h3>{question.title()}</h3>
@@ -39,8 +37,8 @@ fn App() -> Html {
                 <button onclick={
                     move|_| {
                         state.set(false);
+                        setup.set(false);
                         index.set(*index+1);
-                        responses.set(BTreeMap::<usize, bool>::new());
                         if success {
                             score.set(*score+1);
                         } else {
@@ -54,15 +52,19 @@ fn App() -> Html {
         )
     } else {
         let question = dyn_clone::clone_box(&*questions[*index]);
+        if !*setup {
+            question.setup(&responses);
+            setup.set(true)
+        }
         html!(
             <div>
                 <h3>{question.title()}</h3>
-                {question.construct(responses.clone())} <br/>
+                {question.construct(&responses)} <br/>
 
                 <button onclick={
                     move|_|{
                         state.set(true);
-                        if question.success(responses.clone()) {
+                        if question.success(&responses) {
                             score.set(*score+1)
                         }
                     }}>{"Verifions ta réponse"}</button>

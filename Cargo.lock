@@ -691,6 +691,7 @@ name = "os-cours"
 version = "0.1.0"
 dependencies = [
  "dyn-clone",
+ "gloo-console 0.3.0",
  "rand",
  "yew",
 ]
