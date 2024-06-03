@@ -17,12 +17,12 @@ fn App() -> Html {
     let setup = use_state(|| false);
 
     if *index >= questions.len() {
-        html!(<div>{"Vous avez répondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
+        html!(<div class="content">{"Vous avez répondu a toutes les questions."}<br/>{"Votre score est de "} {*score} {"/"} {questions.len()}</div>)
     } else if *state {
         let question = dyn_clone::clone_box(&*questions[*index]);
         let success = question.success(&responses);
         html!(
-            <div>
+            <div class="content">
                 <h3>{question.title()}</h3>
 
                 if success{
@@ -34,7 +34,7 @@ fn App() -> Html {
                     {"Nous reviendrons plus tard sur cette question."}
                 }
                 <br/><br/>
-                <button onclick={
+                <button class="pure-button" onclick={
                     move|_| {
                         state.set(false);
                         setup.set(false);
@@ -57,11 +57,13 @@ fn App() -> Html {
             setup.set(true)
         }
         html!(
-            <div>
-                <h3>{question.title()}</h3>
-                {question.construct(&responses)} <br/>
+            <div class="content">
+                <h3>{*index + 1} {"/"} {questions.len()} {" - "} {question.title()}</h3>
+                {question.construct(&responses)}
 
-                <button onclick={
+                <br/>
+
+                <button class="pure-button" onclick={
                     move|_|{
                         state.set(true);
                         if question.success(&responses) {

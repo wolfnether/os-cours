@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use gloo_console::log;
 use rand::prelude::SliceRandom;
-use yew::{html, Html};
+use yew::{html, html_nested, Html};
 
 use super::{Question, Responses};
 
@@ -41,12 +41,13 @@ impl Question for Mcq<'_> {
     }
 
     fn construct(&self, responses_state: &Responses) -> Html {
-        html!(
-            <div>
-            {self.candidate.iter().enumerate().map(|(i,c)|
-                html!(
-                    <div>
-                    <input type="checkbox" onclick={
+        self.candidate
+            .iter()
+            .enumerate()
+            .map(|(i, c)| {
+                html_nested!(
+                    <>
+                    <input class="pure-checkbox" type="checkbox" onclick={
                         let responses_state = responses_state.clone();
                         move |_| {
                             let mut responses = responses_state.mcq();
@@ -58,10 +59,9 @@ impl Question for Mcq<'_> {
                             responses_state.set(crate::question::ResponsesEnum::Mcq(responses))
                         }
                     }/>
-                    {" "} {c.title}</div>)).collect::<Html>()
-                }
-            </div>
-        )
+                    {" "} {c.title}<br/></>)
+            })
+            .collect::<Html>()
     }
 
     fn success(&self, responses_state: &Responses) -> bool {

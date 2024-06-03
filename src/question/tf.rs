@@ -1,5 +1,5 @@
 use gloo_console::log;
-use yew::html;
+use yew::{html, html_nested};
 
 use super::Question;
 use super::Responses;
@@ -18,11 +18,13 @@ impl Question for Tf<'_> {
     fn construct(&self, responses_state: &Responses) -> yew::prelude::Html {
         let response = responses_state.tf();
         let responses_state = responses_state.clone();
-        html!(
-            <div>
-                <input type="radio" name="response" checked={response == Some(true)} onclick={let responses_state = responses_state.clone();move |_| responses_state.set(crate::question::ResponsesEnum::Tf(Some(true))) }/> {"Vrai"} <br/>
-                <input type="radio" name="response" checked={response == Some(false)} onclick={move |_| responses_state.set(crate::question::ResponsesEnum::Tf(Some(false))) }/> {"Faux"}
-            </div>
+        html_nested!(
+            <>
+                <input class="pure-radio" type="radio" name="response" checked={response == Some(true)} onclick={let responses_state = responses_state.clone();move |_| responses_state.set(crate::question::ResponsesEnum::Tf(Some(true))) }/> {" Vrai"}
+                <br/>
+                <input class="pure-radio" type="radio" name="response" checked={response == Some(false)} onclick={move |_| responses_state.set(crate::question::ResponsesEnum::Tf(Some(false))) }/> {" Faux"}
+                <br/>
+            </>
         )
     }
 
